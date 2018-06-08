@@ -1,0 +1,179 @@
+<html>
+   <head>
+    <script src="https://www.gstatic.com/firebasejs/5.0.2/firebase.js"></script> <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.css" />
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+      
+    <script>
+
+      var config = {
+            apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            authDomain: "demotest-2d795.firebaseapp.com",
+            databaseURL: "https://demotest-2d795.firebaseio.com",
+            projectId: "demotest-2d795",
+            storageBucket: "demotest-2d795.appspot.com",
+            messagingSenderId: "244658032017"
+        };
+        firebase.initializeApp(config);
+        var provider = new firebase.auth.GoogleAuthProvider();
+        var fbprovider = new firebase.auth.FacebookAuthProvider();
+        var twtprovider = new firebase.auth.TwitterAuthProvider();
+        var gitprovider = new firebase.auth.GithubAuthProvider();
+        console.log("...provider...",provider)
+ 
+ function twtSignin(){
+    firebase.auth()
+   .signInWithPopup(twtprovider).then(function(result) {
+      var token = result.credential.accessToken;
+      var user = result.user;
+      console.log(token,result)
+      console.log(user)
+   }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+		
+      console.log(error.code)
+      console.log(error.message)
+   });
+  
+}
+
+function gitSignin(){
+    firebase.auth() 
+   .signInWithPopup(gitprovider).then(function(result) {
+      var token = result.credential.accessToken;
+      var user = result.user;
+		
+      console.log(token,result)
+      console.log(user)
+   }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+		
+      console.log(error.code)
+      console.log(error.message)
+   });
+  
+}
+
+function fbSignin(){
+    firebase.auth() 
+   .signInWithPopup(fbprovider).then(function(result) {
+      var token = result.credential.accessToken;
+      var user = result.user;
+		
+      console.log(token,result)
+      console.log(user)
+   }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+		
+      console.log(error.code)
+      console.log(error.message)
+   });
+  
+}
+
+function googleSignin() {
+   firebase.auth()
+   
+   .signInWithPopup(provider).then(function(result) {
+      var token = result.credential.accessToken;
+      var user = result.user;
+		
+      console.log(token,result)
+      console.log(user)
+   }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+		
+      console.log(error.code)
+      console.log(error.message)
+   });
+}
+
+function googleSignout() {
+   firebase.auth().signOut()
+	
+   .then(function() {
+      console.log('Signout Succesfull')
+   }, function(error) {
+      console.log('Signout Failed')  
+   });
+}
+</script>
+   </head>
+
+   <body>
+        <script>
+                window.fbAsyncInit = function() {
+                  FB.init({
+                    appId      : '1832472937028531',
+                    cookie     : true,
+                    xfbml      : true,
+                    version    : 'v3.0'
+                  });
+                //   FB.AppEvents.logPageView();  
+                  
+                  FB.getLoginStatus(function(response) {
+                     statusChangeCallback(response);
+                 });
+            
+                 
+                function checkLoginState() {
+                FB.getLoginStatus(function(response) {
+                    statusChangeCallback(response);
+                });
+                }
+            
+                };
+              
+                (function(d, s, id){
+                   var js, fjs = d.getElementsByTagName(s)[0];
+                   if (d.getElementById(id)) {return;}
+                   js = d.createElement(s); js.id = id;
+                   js.src = "//connect.facebook.net/en_US/sdk.js";
+                   fjs.parentNode.insertBefore(js, fjs);
+                 }(document, 'script', 'facebook-jssdk'));
+            
+                 function statusChangeCallback(response){
+            
+                    console.log("....statechanged....",response);
+                    if(response.status == "connected"){
+                        console.log("...connected...");
+                    }else{
+                        console.log("...not connected...");
+                    }
+                 }
+            
+            function checkLoginState() {
+              FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+              });
+            }
+              </script>
+<h1>
+Welcome
+</h1>
+
+<button onclick = "googleSignin()">Google Signin</button>
+<button onclick = "fbSignin()">Facebook Signin</button>
+<button onclick = "twtSignin()">Twitter Signin</button>
+<button onclick = "gitSignin()">Github Signin</button>
+<button onclick = "googleSignout()">Google Signout</button>
+<!-- Optimise code with only single function for furher procesing -->
+
+<br><br><br><br><br><br>
+<!--
+  Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
+-->
+
+
+<fb:login-button 
+  scope="public_profile,email"
+  onlogin="checkLoginState();">
+</fb:login-button>
+
+</body>
+</html>

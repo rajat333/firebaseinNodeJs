@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>app.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../";
+    var thisFile = "node-refresh-token\\app.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>app.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)
+<span class="hljs-keyword">const</span> bodyParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">'body-parser'</span>)
+<span class="hljs-keyword">const</span> jwt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonwebtoken'</span>)
+<span class="hljs-keyword">const</span> router = express.Router()
+<span class="hljs-keyword">const</span> config = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config'</span>)
+<span class="hljs-keyword">const</span> tokenList = {}
+<span class="hljs-keyword">const</span> app = express()
+
+router.get(<span class="hljs-string">'/'</span>, (req,res) =&gt; {
+    res.send(<span class="hljs-string">'Ok'</span>);
+})
+
+router.post(<span class="hljs-string">'/login'</span>, (req,res) =&gt; {
+    <span class="hljs-keyword">const</span> postData = req.body;
+    <span class="hljs-keyword">const</span> user = {
+        <span class="hljs-string">"email"</span>: postData.email,
+        <span class="hljs-string">"name"</span>: postData.name
+    }
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<p>do the database authentication here, with user name and password combination.</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">const</span> token = jwt.sign(user, config.secret, { <span class="hljs-attr">expiresIn</span>: config.tokenLife})
+    <span class="hljs-keyword">const</span> refreshToken = jwt.sign(user, config.refreshTokenSecret, { <span class="hljs-attr">expiresIn</span>: config.refreshTokenLife})
+    <span class="hljs-keyword">const</span> response = {
+        <span class="hljs-string">"status"</span>: <span class="hljs-string">"Logged in"</span>,
+        <span class="hljs-string">"token"</span>: token,
+        <span class="hljs-string">"refreshToken"</span>: refreshToken,
+    }
+    tokenList[refreshToken] = response
+    res.status(<span class="hljs-number">200</span>).json(response);
+})
+
+router.post(<span class="hljs-string">'/token'</span>, (req,res) =&gt; {
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<p>refresh the damn token</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">const</span> postData = req.body
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4"></a>
+</div>
+<p>if refresh token exists</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">if</span>((postData.refreshToken) &amp;&amp; (postData.refreshToken <span class="hljs-keyword">in</span> tokenList)) {
+        <span class="hljs-keyword">const</span> user = {
+            <span class="hljs-string">"email"</span>: postData.email,
+            <span class="hljs-string">"name"</span>: postData.name
+        }
+        <span class="hljs-keyword">const</span> token = jwt.sign(user, config.secret, { <span class="hljs-attr">expiresIn</span>: config.tokenLife})
+        <span class="hljs-keyword">const</span> response = {
+            <span class="hljs-string">"token"</span>: token,
+        }
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5"></a>
+</div>
+<p>update the token in the list</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">        tokenList[postData.refreshToken].token = token
+        res.status(<span class="hljs-number">200</span>).json(response);        
+    } <span class="hljs-keyword">else</span> {
+        res.status(<span class="hljs-number">404</span>).send(<span class="hljs-string">'Invalid request'</span>)
+    }
+})
+
+router.use(<span class="hljs-built_in">require</span>(<span class="hljs-string">'./tokenChecker'</span>))
+
+router.get(<span class="hljs-string">'/secure'</span>, (req,res) =&gt; {
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6"></a>
+</div>
+<p>all secured routes goes here</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    res.send(<span class="hljs-string">'I am secured...'</span>)
+})
+
+app.use(bodyParser.json())
+app.use(<span class="hljs-string">'/api'</span>, router);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"...Running on port 3000..."</span>);
+app.listen(config.port || process.env.port || <span class="hljs-number">3000</span>);
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>
